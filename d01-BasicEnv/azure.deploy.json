@@ -1,0 +1,116 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "prefix": {
+            "type": "string",
+            "maxLength": "5"
+        },
+        "location": {
+            "type": "string",
+            "allowedValues": [
+                "East US",
+                "East US 2",
+                "South Central US",
+                "West US 2",
+                "West US 3",
+                "Australia East",
+                "Southeast Asia",
+                "North Europe",
+                "Sweden Central",
+                "UK South",
+                "West Europe",
+                "Central US",
+                "South Africa North",
+                "Central India",
+                "East Asia",
+                "Japan East",
+                "Korea Central",
+                "Canada Central",
+                "France Central",
+                "Germany West Central",
+                "Norway East",
+                "Brazil South"
+            ]
+        }
+    },
+    "variables": {
+        "regionCodes": {
+            "East US": "eus",
+            "East US 2": "eus2",
+            "South Central US": "scus",
+            "West US 2": "wus2",
+            "West US 3": "wus3",
+            "Australia East": "ause",
+            "Southeast Asia": "seas",
+            "North Europe": "noeu",
+            "Sweden Central": "swec",
+            "UK South": "ukso",
+            "West Europe": "weu",
+            "Central US": "cus",
+            "South Africa North": "safn",
+            "Central India": "cind",
+            "East Asia": "eas",
+            "Japan East": "jpe",
+            "Korea Central": "krc",
+            "Canada Central": "cac",
+            "France Central": "frc",
+            "Germany West Central": "gewc",
+            "Norway East": "noe",
+            "Brazil South": "brs"
+        },
+        "regionCode": "[variables('regionCodes')[parameters('location')]]",
+        "naming": {
+            "networkingResourceGroup": "[toLower(concat(parameters('prefix'),'-networking-',variables('regionCode'),'-rg'))]",
+            "addsResourceGroup": "[toLower(concat(parameters('prefix'),'-domainservices-',variables('regionCode'),'-rg'))]",
+            "storageResourceGroup": "[toLower(concat(parameters('prefix'),'-storage-',variables('regionCode'),'-rg'))]"
+        },
+        "artifactsLocation": ""
+    },
+    "resources": [
+        {
+            "name": "[variables('naming').networkingResourceGroup]",
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2021-01-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [],
+            "tags": {
+                "purpose": "Resource Group to host demo environment's networking resources."
+            }
+        },
+        {
+            "name": "networkingDeployment",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat('artifactsLocation', '/linkedTemplates/linkedTemplate.json', 'artifactsLocationSasToken')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {}
+            }
+        },
+        {
+            "name": "[variables('naming').addsResourceGroup]",
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2021-01-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [],
+            "tags": {
+                "purpose": "Resource Group to host demo environment's Active Directory resources."
+            }
+        },
+        {
+            "name": "[variables('naming').storageResourceGroup]",
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2021-01-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [],
+            "tags": {
+                "purpose": "Resource Group to host demo environment's storage resources."
+            }
+        }
+    ],
+    "outputs": {}
+}
