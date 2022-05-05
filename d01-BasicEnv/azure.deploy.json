@@ -63,7 +63,8 @@
         "naming": {
             "networkingResourceGroup": "[toLower(concat(parameters('prefix'),'-networking-',variables('regionCode'),'-rg'))]",
             "addsResourceGroup": "[toLower(concat(parameters('prefix'),'-domainservices-',variables('regionCode'),'-rg'))]",
-            "storageResourceGroup": "[toLower(concat(parameters('prefix'),'-storage-',variables('regionCode'),'-rg'))]"
+            "storageResourceGroup": "[toLower(concat(parameters('prefix'),'-storage-',variables('regionCode'),'-rg'))]",
+            "virtualNetwork": "[toLower(concat(parameters('prefix'),'-',variables('regionCode'),'-vnet'))]"
         },
         "artifactsLocation": "https://raw.githubusercontent.com/bebattis/Files/master/d01-BasicEnv/"
     },
@@ -82,13 +83,24 @@
             "name": "networkingDeployment",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
+            "dependsOn": [
+                "[variables('naming').networkingResourceGroup]"
+            ],
             "properties": {
                 "mode": "Incremental",
+                "resourceGroup": "[variables('naming').networkingResourceGroup]",
                 "templateLink": {
                     "uri": "[concat(variables('artifactsLocation'), '/resources/networking/', 'deploy.networking.json')]",
                     "contentVersion": "1.0.0.0"
                 },
-                "parameters": {}
+                "parameters": {
+                    "virtualNetworkName": {
+                        "value": "[variables('naming').virtualNetwork]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
             }
         },
         {
