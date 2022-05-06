@@ -64,7 +64,8 @@
             "networkingResourceGroup": "[toLower(concat(parameters('prefix'),'-networking-',variables('regionCode'),'-rg'))]",
             "addsResourceGroup": "[toLower(concat(parameters('prefix'),'-domainservices-',variables('regionCode'),'-rg'))]",
             "storageResourceGroup": "[toLower(concat(parameters('prefix'),'-storage-',variables('regionCode'),'-rg'))]",
-            "virtualNetwork": "[toLower(concat(parameters('prefix'),'-',variables('regionCode'),'-vnet'))]"
+            "virtualNetwork": "[toLower(concat(parameters('prefix'),'-',variables('regionCode'),'-vnet'))]",
+            "dcName": "[toLower(concat(parameters('prefix'),variables('regionCode'),'dc1'))]"
         },
         "artifactsLocation": "https://raw.githubusercontent.com/bebattis/Files/master/d01-BasicEnv/"
     },
@@ -86,9 +87,9 @@
             "dependsOn": [
                 "[variables('naming').networkingResourceGroup]"
             ],
+            "resourceGroup": "[variables('naming').networkingResourceGroup]",
             "properties": {
                 "mode": "Incremental",
-                "resourceGroup": "[variables('naming').networkingResourceGroup]",
                 "templateLink": {
                     "uri": "[concat(variables('artifactsLocation'), '/resources/networking/', 'deploy.networking.json')]",
                     "contentVersion": "1.0.0.0"
@@ -99,6 +100,37 @@
                     },
                     "location": {
                         "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "domainControllerDeployment",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "dependsOn": [
+                "[variables('naming').addsResourceGroup]",
+                "networkingDeployment"
+            ],
+            "resourceGroup": "[variables('naming').addsResourceGroup]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('artifactsLocation'), '/resources/adds/', 'deploy.dc.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "vmName": {
+                        "value": "[variables('naming').dcName]"
+                    },
+                    "subnetId": {
+                        "value": "string"
+                    },
+                    "adminUser": {
+                        "value": "string"
                     }
                 }
             }

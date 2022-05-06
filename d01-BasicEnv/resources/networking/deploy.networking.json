@@ -111,5 +111,10 @@
             }
         }
     ],
-    "outputs": {}
+    "outputs": {
+        "dcSubnetId": {
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'),'DomainServicesSubnet')).subnetId]"
+        }
+    }
 }
