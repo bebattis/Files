@@ -3,6 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "prefix": {"value": "batt"},
-        "location": {"value": "West US 3"}
+        "location": {"value": "West US 3"},
+        "adminUser": {"value": "bennett"}
     }
 }

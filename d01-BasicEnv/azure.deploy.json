@@ -32,6 +32,9 @@
                 "Norway East",
                 "Brazil South"
             ]
+        },
+        "adminUser": {
+            "type": "string"
         }
     },
     "variables": {
@@ -127,10 +130,10 @@
                         "value": "[variables('naming').dcName]"
                     },
                     "subnetId": {
-                        "value": "string"
+                        "value": "[reference('networkingDeployment').outputs.dcSubnetId.value]"
                     },
                     "adminUser": {
-                        "value": "string"
+                        "value": "[parameters('adminUser')]"
                     }
                 }
             }
